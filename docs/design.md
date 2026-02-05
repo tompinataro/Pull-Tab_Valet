@@ -2,7 +2,7 @@
 
 ## Canonical link
 
-**TBD — Figma link pending.**
+**Figma:** https://www.figma.com/design/CVqHapu9SaRDwQvRqcHAZV/Untitled?node-id=0-1&p=f&t=8SlOWNF3VkDCbCz8-0
 
 When the link is available, add it here and (optionally) include deep-links to specific pages/frames.
 
