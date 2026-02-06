@@ -2,9 +2,9 @@
 
 ## Canonical link
 
-**Figma:** https://www.figma.com/design/CVqHapu9SaRDwQvRqcHAZV/Untitled?node-id=0-1&p=f&t=8SlOWNF3VkDCbCz8-0
+**Figma:** https://www.figma.com/design/Lr1ZQiI9lmSIgZOLOlPQKN/PTV-Wireframes?m=auto&t=9JKg2VFl36kYi8pT-1
 
-When the link is available, add it here and (optionally) include deep-links to specific pages/frames.
+If specific pages/frames should be prioritized for export/review, add deep-links here.
 
 ## How to review
 
