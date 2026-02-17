@@ -1,0 +1,42 @@
+{
+  "name": "pull-tab-valet-desktop",
+  "version": "1.0.0",
+  "description": "Desktop wrapper for Pull Tab Valet",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k \"npm --prefix ../mobile run web\" \"wait-on http://localhost:8081 && cross-env ELECTRON_START_URL=http://localhost:8081 electron .\"",
+    "start": "electron .",
+    "build:web": "npm --prefix ../mobile run export:web",
+    "dist:mac": "npm run build:web && electron-builder --mac --publish never"
+  },
+  "build": {
+    "appId": "com.tixpy.pulltabvalet.desktop",
+    "productName": "Pull Tab Valet",
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../mobile/dist",
+        "to": "web"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.business",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "wait-on": "^8.0.3"
+  }
+}
