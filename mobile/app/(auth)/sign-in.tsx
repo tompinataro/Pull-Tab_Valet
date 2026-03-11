@@ -2,15 +2,33 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
+import { supabase } from '@/src/lib/supabase';
+
 export default function SignInScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function signIn() {
+    setError(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      router.replace('/(tabs)/venues');
+    } catch (e: any) {
+      setError(String(e?.message || e));
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.h1}>Pull-Tab Valet</Text>
-      <Text style={styles.p}>Sign in (Supabase auth coming next).</Text>
+      <Text style={styles.p}>Sign in</Text>
 
       <TextInput
         value={email}
@@ -31,14 +49,10 @@ export default function SignInScreen() {
         style={styles.input}
       />
 
-      <Pressable
-        style={styles.btn}
-        onPress={() => {
-          // stub until Supabase wired
-          router.replace('/(tabs)/venues');
-        }}
-      >
-        <Text style={styles.btnText}>Sign In (stub)</Text>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      <Pressable style={[styles.btn, loading && styles.btnDisabled]} onPress={signIn} disabled={loading}>
+        <Text style={styles.btnText}>{loading ? 'Signing in…' : 'Sign In'}</Text>
       </Pressable>
     </View>
   );
@@ -65,4 +79,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   btnText: { color: 'white', fontWeight: '900' },
+  btnDisabled: { opacity: 0.65 },
+  error: { color: '#ff6b6b', marginBottom: 10 },
 });

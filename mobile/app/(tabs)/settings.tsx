@@ -1,13 +1,37 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+
+import { supabase } from '@/src/lib/supabase';
 
 export default function SettingsScreen() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function signOut() {
+    setError(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      router.replace('/(auth)/sign-in');
+    } catch (e: any) {
+      setError(String(e?.message || e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.h1}>Settings</Text>
-      <Text style={styles.p}>MVP: account + sign out.</Text>
+      <Text style={styles.p}>Account</Text>
 
-      <Pressable style={styles.btn} onPress={() => {}}>
-        <Text style={styles.btnText}>Sign out (stub)</Text>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      <Pressable style={[styles.btn, loading && styles.btnDisabled]} onPress={signOut} disabled={loading}>
+        <Text style={styles.btnText}>{loading ? 'Signing out…' : 'Sign out'}</Text>
       </Pressable>
     </View>
   );
@@ -26,4 +50,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   btnText: { color: 'white', fontWeight: '800' },
+  btnDisabled: { opacity: 0.65 },
+  error: { color: '#ff6b6b', marginBottom: 10 },
 });

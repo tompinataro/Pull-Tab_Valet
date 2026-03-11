@@ -1,12 +1,12 @@
-import { Redirect, Tabs } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 import { supabase } from '@/src/lib/supabase';
 
-export default function TabsLayout() {
+export default function AuthLayout() {
+  const router = useRouter();
   const [checking, setChecking] = useState(true);
-  const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -15,7 +15,9 @@ export default function TabsLayout() {
       try {
         const { data } = await supabase.auth.getSession();
         if (!mounted) return;
-        setAuthed(Boolean(data.session));
+        if (data.session) {
+          router.replace('/(tabs)/venues');
+        }
       } finally {
         if (mounted) setChecking(false);
       }
@@ -24,14 +26,14 @@ export default function TabsLayout() {
     run();
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAuthed(Boolean(session));
+      if (session) router.replace('/(tabs)/venues');
     });
 
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
     };
-  }, []);
+  }, [router]);
 
   if (checking) {
     return (
@@ -41,16 +43,5 @@ export default function TabsLayout() {
     );
   }
 
-  if (!authed) {
-    return <Redirect href="/(auth)/sign-in" />;
-  }
-
-  return (
-    <Tabs>
-      <Tabs.Screen name="venues" options={{ title: 'Venues' }} />
-      <Tabs.Screen name="scan" options={{ title: 'Scan' }} />
-      <Tabs.Screen name="reports" options={{ title: 'Reports' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
-    </Tabs>
-  );
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
