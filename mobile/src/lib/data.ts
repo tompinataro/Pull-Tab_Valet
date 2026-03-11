@@ -15,6 +15,12 @@ export async function listVenues(): Promise<Venue[]> {
   return data as Venue[];
 }
 
+export async function getVenue(id: string): Promise<Venue> {
+  const { data, error } = await supabase.from('venues').select('*').eq('id', id).single();
+  if (error) throw error;
+  return data as Venue;
+}
+
 export async function createVenue(input: { name: string; address?: string; notes?: string }): Promise<Venue> {
   const { data, error } = await supabase
     .from('venues')
@@ -30,6 +36,20 @@ export async function createVenue(input: { name: string; address?: string; notes
     payload: { name: input.name },
   });
 
+  return data as Venue;
+}
+
+export async function updateVenue(
+  id: string,
+  input: { name: string; address?: string | null; notes?: string | null }
+): Promise<Venue> {
+  const { data, error } = await supabase
+    .from('venues')
+    .update({ name: input.name, address: input.address ?? null, notes: input.notes ?? null })
+    .eq('id', id)
+    .select('*')
+    .single();
+  if (error) throw error;
   return data as Venue;
 }
 
@@ -205,4 +225,10 @@ export async function listReports(filters: { venueId?: string; from?: string; to
   const { data, error } = await q;
   if (error) throw error;
   return data as Report[];
+}
+
+export async function getSignedReportUrl(bucket: string, path: string, expiresSec = 60 * 60) {
+  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresSec);
+  if (error) throw error;
+  return data.signedUrl;
 }
