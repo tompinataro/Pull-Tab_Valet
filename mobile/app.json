@@ -20,13 +20,24 @@
     },
     "android": {
       "package": "com.tixpy.pulltabvalet",
-      "versionCode": 1
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0c2f86"
+      },
+      "versionCode": 3
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
         "projectId": "062b04d4-3a93-46c1-b652-8478165cbef6"
       }
     },
-    "owner": "pinataro"
+    "owner": "pinataro",
+    "scheme": "pulltabvalet",
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
