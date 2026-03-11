@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '../../src/lib/supabase';
 
 export default function SettingsScreen() {
   const router = useRouter();

@@ -2,7 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '../../src/lib/supabase';
 
 export default function TabsLayout() {
   const [checking, setChecking] = useState(true);

@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '../../src/lib/supabase';
 
 export default function SignInScreen() {
   const router = useRouter();
