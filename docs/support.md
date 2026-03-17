@@ -1,29 +1,27 @@
-# Pull-Tab Valet — Support
+# Pull Tab Valet — Support
 
-Need help? Use the options below.
+Need help? Start with the options below.
 
 Contact
 - Email (preferred): TixPy@pinataro.com
 - GitHub Issues: https://github.com/tompinataro/Pull-Tab_Valet/issues/new/choose
 
-Account & Data Deletion Requests
-- Request URL: https://tompinataro.github.io/Pull-Tab_Valet/support#account-deletion
-- To request deletion of your account and associated data, email TixPy@pinataro.com with:
-  - Subject: "Pull-Tab Valet Account Deletion Request"
-  - The email address tied to your account
-  - Any organization/location identifiers needed to find your records
+Account & Data Requests
+- Request URL: https://tompinataro.github.io/Pull-Tab-Valet/support#account-deletion
+- Send an email to TixPy@pinataro.com with subject "Pull Tab Valet Account Deletion Request"
+- Include the account email and any organization or location identifiers that help us find your records
 
 Quick Checks
-- Server Health: Confirm the API responds at /health (see [Staging Runbook](https://tompinataro.github.io/Pull-Tab_Valet/docs/STAGING_RUNBOOK))
-- App Version: Ensure you’re on the latest build
-- Network: Verify connectivity and try again after a few minutes
+- Server Health: verify the API /health endpoint (see [Staging Runbook](https://tompinataro.github.io/Pull-Tab-Valet/docs/STAGING_RUNBOOK))
+- App Version: confirm you are on the latest TestFlight or production build
+- Network: ensure a reliable connection before retrying sync or submission flows
 
 Common Topics
-- Login & Accounts: Organization-managed accounts only; request access from your admin
-- Submissions: If offline, submissions will sync automatically when online
-- Location: Optional; deny permission if not required by your organization
+- Login & Accounts: Organization-managed accounts only; contact your admin for access
+- Visit Sync: Offline updates queue locally and sync automatically when connectivity returns
+- Location: Permission is optional unless your organization requires proof-of-presence for check-in
 
-Links
-- Runbook (staging): https://tompinataro.github.io/Pull-Tab_Valet/docs/STAGING_RUNBOOK
-- Privacy Policy: https://tompinataro.github.io/Pull-Tab_Valet/privacy
-- Account Deletion Request: https://tompinataro.github.io/Pull-Tab_Valet/support#account-deletion
+Resources
+- Staging Runbook: https://tompinataro.github.io/Pull-Tab-Valet/docs/STAGING_RUNBOOK
+- Privacy Policy: https://tompinataro.github.io/Pull-Tab-Valet/privacy
+- Account Deletion Request: https://tompinataro.github.io/Pull-Tab-Valet/support#account-deletion
