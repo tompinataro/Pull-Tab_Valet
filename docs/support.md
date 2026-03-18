@@ -12,16 +12,17 @@ Account & Data Requests
 - Include the account email and any organization or location identifiers that help us find your records
 
 Quick Checks
-- Server Health: verify the API /health endpoint (see [Staging Runbook](https://tompinataro.github.io/Pull-Tab-Valet/docs/STAGING_RUNBOOK))
 - App Version: confirm you are on the latest TestFlight or production build
-- Network: ensure a reliable connection before retrying sync or submission flows
+- Camera Access: if scanning is not working, make sure camera permission is enabled for Pull Tab Valet in device settings
+- Refresh Data: if venues or reports look stale, reopen the screen or use the in-app refresh controls
 
 Common Topics
-- Login & Accounts: Organization-managed accounts only; contact your admin for access
-- Visit Sync: Offline updates queue locally and sync automatically when connectivity returns
-- Location: Permission is optional unless your organization requires proof-of-presence for check-in
+- Login & Accounts: Use the sign-in screen to access the app; if you cannot sign in, contact support and include the email address you are trying to use
+- Venues & Boxes: The Venues tab is the starting point for venue setup and box management; if a box detail screen is not loading, go back to Venues and reopen it from the venue flow
+- Scanning UPCs: Use the Scan tab to choose a venue, scan a pull-tab box UPC, or enter the code manually if scanning is unavailable
+- Closeouts & Reports: Use the closeout flow to finish a box and the Reports tab to review generated report rows
+- Camera Permission: The app requests camera access only when you choose to scan; you can re-enable it later in device settings
 
 Resources
-- Staging Runbook: https://tompinataro.github.io/Pull-Tab-Valet/docs/STAGING_RUNBOOK
 - Privacy Policy: https://tompinataro.github.io/Pull-Tab-Valet/privacy
 - Account Deletion Request: https://tompinataro.github.io/Pull-Tab-Valet/support#account-deletion

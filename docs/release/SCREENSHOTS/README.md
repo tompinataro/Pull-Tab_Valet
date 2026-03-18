@@ -10,10 +10,10 @@ How to generate
   `bash scripts/ios_screenshots.sh`
 
 - The script will:
-  - Boot iPhone 15 Pro Max (6.7") and iPhone 15 Pro (6.1").
+  - Boot the best available 6.7" and 6.1" iPhone simulators on this Mac.
   - Apply a clean status bar (9:41, full battery, Wi‑Fi).
-  - Prompt you three times per device (login, routes, visit). Navigate to each screen and press Enter to capture.
-  - Save PNGs here as `iphone-6.7-login.png`, `iphone-6.7-routes.png`, `iphone-6.7-visit.png`, and the 6.1" equivalents.
+  - Prompt you four times per device (`login`, `venues`, `closeout`, `reports`). Navigate to each screen and press Enter to capture.
+  - Save PNGs here as `iphone-6.7-login.png`, `iphone-6.7-venues.png`, `iphone-6.7-closeout.png`, `iphone-6.7-reports.png`, and the 6.1" equivalents.
 
 Notes
 - You can edit the `SCREENS=(...)` list inside `scripts/ios_screenshots.sh` to add/remove prompts or change names.

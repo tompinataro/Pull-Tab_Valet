@@ -14,7 +14,7 @@ mkdir -p "$OUT_DIR"
 PREFERRED_67=("iPhone 17 Pro Max" "iPhone 16 Pro Max" "iPhone 15 Pro Max")
 PREFERRED_61=("iPhone 17 Pro" "iPhone 16 Pro" "iPhone 15 Pro")
 
-SCREENS=(login routes visit)
+SCREENS=(login venues closeout reports)
 
 function udid_for() {
   local name="$1"
