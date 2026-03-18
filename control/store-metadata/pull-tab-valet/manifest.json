@@ -1,0 +1,14 @@
+{
+  "slug": "pull-tab-valet",
+  "displayName": "Pull-Tab Valet",
+  "repoPath": "/Users/tompinataro/My Projects/pull-tab_valet",
+  "bundleId": "com.tixpy.pulltabvalet",
+  "appleAppId": "6759136513",
+  "googlePlayPackage": "com.tixpy.pulltabvalet",
+  "links": {
+    "appStore": "",
+    "googlePlay": "https://play.google.com/store/apps/details?id=com.tixpy.pulltabvalet"
+  },
+  "generatedAt": "2026-03-17T14:22:53.814Z",
+  "outDir": "/Users/tompinataro/My Projects/Canopi/control/store-metadata/apps/pull-tab-valet/out"
+}
