@@ -10,13 +10,12 @@ How to generate
   `bash scripts/ios_screenshots.sh`
 
 - The script will:
-  - Boot iPhone 15 Pro Max (6.7") and iPhone 8 Plus (5.5").
+  - Boot iPhone 15 Pro Max (6.7") and iPhone 15 Pro (6.1").
   - Apply a clean status bar (9:41, full battery, Wi‑Fi).
   - Prompt you three times per device (login, routes, visit). Navigate to each screen and press Enter to capture.
-  - Save PNGs here as `iphone-6.7-login.png`, `iphone-6.7-routes.png`, `iphone-6.7-visit.png`, and the 5.5" equivalents.
+  - Save PNGs here as `iphone-6.7-login.png`, `iphone-6.7-routes.png`, `iphone-6.7-visit.png`, and the 6.1" equivalents.
 
 Notes
 - You can edit the `SCREENS=(...)` list inside `scripts/ios_screenshots.sh` to add/remove prompts or change names.
 - If you want device frames or captions, add them later in a graphics tool; the raw Simulator captures meet Apple’s requirements.
 - If status bar looks wrong, re-run the script; it re-applies overrides each time. To clear overrides manually: `xcrun simctl status_bar booted clear`.
-

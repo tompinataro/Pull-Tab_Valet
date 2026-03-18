@@ -2,7 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { supabase } from '../../src/lib/supabase';
+import { getIsSignedIn } from '../../src/lib/auth';
 
 export default function TabsLayout() {
   const [checking, setChecking] = useState(true);
@@ -13,9 +13,9 @@ export default function TabsLayout() {
 
     async function run() {
       try {
-        const { data } = await supabase.auth.getSession();
+        const signedIn = await getIsSignedIn();
         if (!mounted) return;
-        setAuthed(Boolean(data.session));
+        setAuthed(signedIn);
       } finally {
         if (mounted) setChecking(false);
       }
@@ -23,13 +23,8 @@ export default function TabsLayout() {
 
     run();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAuthed(Boolean(session));
-    });
-
     return () => {
       mounted = false;
-      sub.subscription.unsubscribe();
     };
   }, []);
 

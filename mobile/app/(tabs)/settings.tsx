@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
-import { supabase } from '../../src/lib/supabase';
+import { signOutFromAppAuth } from '../../src/lib/auth';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -13,8 +13,7 @@ export default function SettingsScreen() {
     setError(null);
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await signOutFromAppAuth();
       router.replace('/(auth)/sign-in');
     } catch (e: any) {
       setError(String(e?.message || e));

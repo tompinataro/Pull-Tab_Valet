@@ -2,12 +2,12 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
-import { supabase } from '../../src/lib/supabase';
+import { DEMO_EMAIL, DEMO_PASSWORD, signInWithAppAuth } from '../../src/lib/auth';
 
 export default function SignInScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(DEMO_EMAIL);
+  const [password, setPassword] = useState(DEMO_PASSWORD);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,8 +15,7 @@ export default function SignInScreen() {
     setError(null);
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      await signInWithAppAuth(email, password);
       router.replace('/(tabs)/venues');
     } catch (e: any) {
       setError(String(e?.message || e));

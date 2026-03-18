@@ -30,14 +30,12 @@
     "build:android:prod": "eas build -p android --profile production",
     "submit:android:latest": "eas submit -p android --latest",
     "preflight": "npx expo-doctor --verbose && npx expo install --check",
-    "postinstall": "node ./scripts/patch-background-fetch.js && node ./scripts/patch-rn-gradle-plugin.js"
+    "postinstall": "node ./scripts/patch-background-fetch.js && node ./scripts/patch-rn-gradle-plugin.js && node ./scripts/patch-expo-constants-podspec.js"
   },
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-navigation/native": "^6.1.18",
-    "@react-navigation/stack": "^6.4.1",
     "@supabase/supabase-js": "^2.99.0",
     "@types/react": "~19.1.10",
     "axios": "^1.11.0",

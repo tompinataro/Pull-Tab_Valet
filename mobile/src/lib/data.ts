@@ -1,12 +1,20 @@
+import { isDemoSessionActive, DEMO_EMAIL } from './auth';
+import { createDemoVenue, getDemoVenue, listDemoReports, listDemoVenues, updateDemoVenue } from './demo-data';
 import { supabase } from './supabase';
 import type { AuditEventType, Box, BoxStatus, Deposit, Prize, Report, Venue } from './types';
 
 export async function getCurrentUserEmail(): Promise<string | null> {
+  if (await isDemoSessionActive()) {
+    return DEMO_EMAIL;
+  }
   const { data } = await supabase.auth.getUser();
   return data.user?.email ?? null;
 }
 
 export async function listVenues(): Promise<Venue[]> {
+  if (await isDemoSessionActive()) {
+    return listDemoVenues();
+  }
   const { data, error } = await supabase
     .from('venues')
     .select('*')
@@ -16,12 +24,18 @@ export async function listVenues(): Promise<Venue[]> {
 }
 
 export async function getVenue(id: string): Promise<Venue> {
+  if (await isDemoSessionActive()) {
+    return getDemoVenue(id);
+  }
   const { data, error } = await supabase.from('venues').select('*').eq('id', id).single();
   if (error) throw error;
   return data as Venue;
 }
 
 export async function createVenue(input: { name: string; address?: string; notes?: string }): Promise<Venue> {
+  if (await isDemoSessionActive()) {
+    return createDemoVenue(input);
+  }
   const { data, error } = await supabase
     .from('venues')
     .insert({ name: input.name, address: input.address ?? null, notes: input.notes ?? null })
@@ -43,6 +57,9 @@ export async function updateVenue(
   id: string,
   input: { name: string; address?: string | null; notes?: string | null }
 ): Promise<Venue> {
+  if (await isDemoSessionActive()) {
+    return updateDemoVenue(id, input);
+  }
   const { data, error } = await supabase
     .from('venues')
     .update({ name: input.name, address: input.address ?? null, notes: input.notes ?? null })
@@ -218,6 +235,9 @@ export async function createReportRow(input: {
 }
 
 export async function listReports(filters: { venueId?: string; from?: string; to?: string }): Promise<Report[]> {
+  if (await isDemoSessionActive()) {
+    return listDemoReports(filters);
+  }
   let q = supabase.from('reports').select('*').order('created_at', { ascending: false });
   if (filters.venueId) q = q.eq('venue_id', filters.venueId);
   if (filters.from) q = q.gte('created_at', filters.from);
@@ -228,6 +248,9 @@ export async function listReports(filters: { venueId?: string; from?: string; to
 }
 
 export async function getSignedReportUrl(bucket: string, path: string, expiresSec = 60 * 60) {
+  if (await isDemoSessionActive()) {
+    return `https://example.com/${bucket}/${path}?expires=${expiresSec}`;
+  }
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresSec);
   if (error) throw error;
   return data.signedUrl;

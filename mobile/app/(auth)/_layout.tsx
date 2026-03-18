@@ -1,23 +1,21 @@
-import { Stack, useRouter } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { supabase } from '../../src/lib/supabase';
+import { getIsSignedIn } from '../../src/lib/auth';
 
 export default function AuthLayout() {
-  const router = useRouter();
   const [checking, setChecking] = useState(true);
+  const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
     async function run() {
       try {
-        const { data } = await supabase.auth.getSession();
+        const signedIn = await getIsSignedIn();
         if (!mounted) return;
-        if (data.session) {
-          router.replace('/(tabs)/venues');
-        }
+        setAuthed(signedIn);
       } finally {
         if (mounted) setChecking(false);
       }
@@ -25,15 +23,10 @@ export default function AuthLayout() {
 
     run();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) router.replace('/(tabs)/venues');
-    });
-
     return () => {
       mounted = false;
-      sub.subscription.unsubscribe();
     };
-  }, [router]);
+  }, []);
 
   if (checking) {
     return (
@@ -41,6 +34,10 @@ export default function AuthLayout() {
         <ActivityIndicator />
       </View>
     );
+  }
+
+  if (authed) {
+    return <Redirect href="/(tabs)/venues" />;
   }
 
   return <Stack screenOptions={{ headerShown: false }} />;
