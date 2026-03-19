@@ -16,7 +16,11 @@
     "files": [
       "main.js",
       "preload.js",
+      "db.js",
       "package.json"
+    ],
+    "asarUnpack": [
+      "**/*.node"
     ],
     "extraResources": [
       {
