@@ -1,5 +1,8 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
+
+const desktopDb = require('./db');
 
 function resolveStartUrl() {
   if (process.env.ELECTRON_START_URL) {
@@ -32,7 +35,23 @@ function createWindow() {
   win.loadURL(resolveStartUrl());
 }
 
+function registerIpc() {
+  ipcMain.handle('ptv.db.ensureSchema', async () => {
+    return desktopDb.ensureSchema(fs);
+  });
+  ipcMain.handle('ptv.db.upsertScan', async (_evt, venueId, upc) => {
+    return desktopDb.upsertScan(fs, venueId, upc);
+  });
+  ipcMain.handle('ptv.db.countQueuedForVenue', async (_evt, venueId) => {
+    return desktopDb.countQueuedForVenue(fs, venueId);
+  });
+  ipcMain.handle('ptv.db.path', async () => {
+    return { ok: true, path: desktopDb.getDbPath() };
+  });
+}
+
 app.whenReady().then(() => {
+  registerIpc();
   createWindow();
 
   app.on('activate', () => {

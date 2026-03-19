@@ -9,11 +9,12 @@ import {
   View,
   FlatList,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { useRouter } from 'expo-router';
 
-import { ensureSchema, upsertScan } from '../../src/lib/db';
+import { ensureSchema, upsertScan } from '../../src/lib/db/index';
 import { createVenue, getOrCreateBoxByVenueUpc, listVenues } from '../../src/lib/data';
 import type { Venue } from '../../src/lib/types';
 
@@ -32,6 +33,7 @@ type UiState =
 
 export default function ScanScreen() {
   const router = useRouter();
+  const isDesktop = Platform.OS === 'web';
   const [permission, requestPermission] = useCameraPermissions();
 
   const [mode, setMode] = useState<Mode>('single');
@@ -55,7 +57,7 @@ export default function ScanScreen() {
     ensureSchema().catch(() => {});
   }, []);
 
-  const permissionGranted = permission?.granted;
+  const permissionGranted = isDesktop ? true : permission?.granted;
 
   async function refreshVenues() {
     setVenuesLoading(true);
@@ -83,6 +85,15 @@ export default function ScanScreen() {
   async function onVenuePicked(v: Venue) {
     setSelectedVenue(v);
     setVenueModalOpen(false);
+
+    if (isDesktop) {
+      // Desktop/Electron: use manual entry (camera scanning is not supported/reliable).
+      setManualUpc('');
+      setManualOpen(true);
+      setUi({ kind: 'idle' });
+      return;
+    }
+
     setUi({ kind: 'camera' });
   }
 
@@ -169,9 +180,11 @@ export default function ScanScreen() {
         </Pressable>
       </View>
 
-      <Text style={styles.p}>Venue required every time. Manual entry available.</Text>
+      <Text style={styles.p}>
+        Venue required every time. {isDesktop ? 'Desktop uses manual entry.' : 'Manual entry available.'}
+      </Text>
 
-      {!permissionGranted ? (
+      {!isDesktop && !permissionGranted ? (
         <Pressable onPress={requestPermission} style={styles.primaryBtn}>
           <Text style={styles.primaryText}>Enable Camera</Text>
         </Pressable>
@@ -185,27 +198,29 @@ export default function ScanScreen() {
         <Text style={styles.secondaryText}>Enter code manually</Text>
       </Pressable>
 
-      {/* Camera modal */}
-      <Modal visible={ui.kind === 'camera'} animationType="slide">
-        <View style={{ flex: 1, backgroundColor: 'black' }}>
-          <CameraView
-            style={StyleSheet.absoluteFill}
-            facing="back"
-            barcodeScannerSettings={{ barcodeTypes: ['upc_a', 'ean13'] }}
-            onBarcodeScanned={onBarcodeScanned}
-          />
-          <View style={styles.cameraOverlay}>
-            <View style={styles.topRow}>
-              <Text style={styles.cameraTitle}>{selectedVenue ? selectedVenue.name : 'Scan'}</Text>
-              <Pressable onPress={() => setUi({ kind: 'idle' })} style={styles.smallBtn}>
-                <Text style={styles.smallBtnText}>Close</Text>
-              </Pressable>
+      {/* Camera modal (native only) */}
+      {!isDesktop ? (
+        <Modal visible={ui.kind === 'camera'} animationType="slide">
+          <View style={{ flex: 1, backgroundColor: 'black' }}>
+            <CameraView
+              style={StyleSheet.absoluteFill}
+              facing="back"
+              barcodeScannerSettings={{ barcodeTypes: ['upc_a', 'ean13'] }}
+              onBarcodeScanned={onBarcodeScanned}
+            />
+            <View style={styles.cameraOverlay}>
+              <View style={styles.topRow}>
+                <Text style={styles.cameraTitle}>{selectedVenue ? selectedVenue.name : 'Scan'}</Text>
+                <Pressable onPress={() => setUi({ kind: 'idle' })} style={styles.smallBtn}>
+                  <Text style={styles.smallBtnText}>Close</Text>
+                </Pressable>
+              </View>
+              <View style={styles.frame} />
+              <Text style={styles.help}>Aim UPC/EAN inside the box.</Text>
             </View>
-            <View style={styles.frame} />
-            <Text style={styles.help}>Aim UPC/EAN inside the box.</Text>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : null}
 
       {/* Venue picker */}
       <Modal visible={venueModalOpen} animationType="slide">
