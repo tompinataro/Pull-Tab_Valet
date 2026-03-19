@@ -50,8 +50,31 @@ function registerIpc() {
   });
 }
 
+async function runSmokeTestAndQuit() {
+  // Runs in Electron (so better-sqlite3 native module matches ABI).
+  try {
+    const r1 = desktopDb.ensureSchema(fs);
+    const r2 = desktopDb.upsertScan(fs, 'smoke-venue', '012345678905');
+    const r3 = desktopDb.countQueuedForVenue(fs, 'smoke-venue');
+    // eslint-disable-next-line no-console
+    console.log('[PTV_SMOKE_TEST]', { r1, r2, r3, dbPath: desktopDb.getDbPath() });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('[PTV_SMOKE_TEST] failed', e);
+    process.exitCode = 1;
+  } finally {
+    app.quit();
+  }
+}
+
 app.whenReady().then(() => {
   registerIpc();
+
+  if (process.env.PTV_SMOKE_TEST === '1') {
+    runSmokeTestAndQuit();
+    return;
+  }
+
   createWindow();
 
   app.on('activate', () => {
