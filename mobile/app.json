@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pull Tab Valet",
     "slug": "pull-tab-valet",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "icon": "./assets/icon.png",
     "assetBundlePatterns": [
       "assets/*"
@@ -16,7 +16,7 @@
     "updates": {},
     "ios": {
       "bundleIdentifier": "com.tixpy.pulltabvalet",
-      "buildNumber": "1",
+      "buildNumber": "5",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow Pull Tab Valet to scan pull-tab box UPC codes."
       }
