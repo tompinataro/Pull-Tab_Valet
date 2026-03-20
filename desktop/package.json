@@ -44,13 +44,13 @@
       "entitlements": "entitlements.mas.plist",
       "entitlementsInherit": "entitlements.mas.inherit.plist",
       "gatekeeperAssess": false,
-      "hardenedRuntime": false
+      "hardenedRuntime": false,
+      "extendInfo": {
+        "ElectronTeamID": "S4Y9X74BAL"
+      }
     },
     "pkg": {
       "identity": "3rd Party Mac Developer Installer: Thomas Anthony Pinataro (S4Y9X74BAL)"
-    },
-    "extendInfo": {
-      "ElectronTeamID": "S4Y9X74BAL"
     }
   },
   "devDependencies": {
