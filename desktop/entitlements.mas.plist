@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Mac App Store sandbox -->
+  <key>com.apple.security.app-sandbox</key>
+  <true/>
+
+  <!-- Network (likely needed for auth/sync) -->
+  <key>com.apple.security.network.client</key>
+  <true/>
+
+  <!-- Local persistence (SQLite in Application Support) -->
+  <key>com.apple.security.files.user-selected.read-write</key>
+  <true/>
+
+  <!-- If you ever need downloads folder access, prefer user-selected instead of broad access. -->
+
+</dict>
+</plist>
