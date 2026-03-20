@@ -10,7 +10,8 @@
     "build:web": "npm --prefix ../mobile run export:web",
     "dist:mac": "npm run build:web && electron-builder --mac --publish never",
     "dist:mas": "npm run build:web && electron-builder --mac mas --publish never",
-    "dist:mas:pkg": "npm run build:web && electron-builder --mac mas pkg --publish never"
+    "dist:mas:pkg": "npm run build:web && electron-builder --mac mas pkg --publish never",
+    "dist:mas:pkg:universal": "npm run build:web && electron-builder --mac mas pkg --universal --publish never"
   },
   "build": {
     "appId": "com.tixpy.pulltabvalet.desktop",
