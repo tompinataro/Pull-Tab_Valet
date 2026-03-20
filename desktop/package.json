@@ -36,11 +36,15 @@
       "target": [
         "dmg",
         "zip"
-      ]
+      ],
+      "extendInfo": {
+        "ElectronTeamID": "S4Y9X74BAL"
+      }
     },
     "mas": {
       "category": "public.app-category.business",
       "identity": "Thomas Anthony Pinataro (S4Y9X74BAL)",
+      "provisioningProfile": "/Users/tompinataro/Library/MobileDevice/Provisioning Profiles/Pull_Tab_Valet_Desktop_MAS.provisionprofile",
       "entitlements": "entitlements.mas.plist",
       "entitlementsInherit": "entitlements.mas.inherit.plist",
       "gatekeeperAssess": false,
@@ -50,7 +54,7 @@
       }
     },
     "pkg": {
-      "identity": "3rd Party Mac Developer Installer: Thomas Anthony Pinataro (S4Y9X74BAL)"
+      "identity": "Thomas Anthony Pinataro (S4Y9X74BAL)"
     }
   },
   "devDependencies": {
