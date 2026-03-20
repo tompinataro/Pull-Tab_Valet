@@ -1,6 +1,6 @@
 {
   "name": "pull-tab-valet-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Desktop wrapper for Pull Tab Valet",
   "main": "main.js",
   "private": true,
