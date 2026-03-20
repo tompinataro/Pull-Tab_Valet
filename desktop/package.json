@@ -9,7 +9,8 @@
     "start": "electron .",
     "build:web": "npm --prefix ../mobile run export:web",
     "dist:mac": "npm run build:web && electron-builder --mac --publish never",
-    "dist:mas": "npm run build:web && electron-builder --mac mas --publish never"
+    "dist:mas": "npm run build:web && electron-builder --mac mas --publish never",
+    "dist:mas:pkg": "npm run build:web && electron-builder --mac mas pkg --publish never"
   },
   "build": {
     "appId": "com.tixpy.pulltabvalet.desktop",
@@ -43,6 +44,9 @@
       "entitlementsInherit": "entitlements.mas.inherit.plist",
       "gatekeeperAssess": false,
       "hardenedRuntime": false
+    },
+    "pkg": {
+      "identity": "3rd Party Mac Developer Installer: Thomas Anthony Pinataro (S4Y9X74BAL)"
     }
   },
   "devDependencies": {
