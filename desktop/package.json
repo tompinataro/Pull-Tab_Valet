@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "concurrently -k \"npm --prefix ../mobile run web\" \"wait-on http://localhost:8081 && cross-env ELECTRON_START_URL=http://localhost:8081 electron .\"",
     "start": "electron .",
-    "build:web": "npm --prefix ../mobile run export:web",
+    "build:web": "npm --prefix ../mobile run export:web && node scripts/fix-web-paths.mjs",
     "dist:mac": "npm run build:web && electron-builder --mac --publish never",
     "dist:mas": "npm run build:web && electron-builder --mac mas --publish never",
     "dist:mas:pkg": "npm run build:web && electron-builder --mac mas pkg --publish never",
