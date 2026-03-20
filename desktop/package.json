@@ -39,7 +39,8 @@
       ],
       "extendInfo": {
         "ElectronTeamID": "S4Y9X74BAL"
-      }
+      },
+      "icon": "assets/icon.icns"
     },
     "mas": {
       "category": "public.app-category.business",
@@ -51,7 +52,8 @@
       "hardenedRuntime": false,
       "extendInfo": {
         "ElectronTeamID": "S4Y9X74BAL"
-      }
+      },
+      "icon": "assets/icon.icns"
     },
     "pkg": {
       "identity": "Thomas Anthony Pinataro (S4Y9X74BAL)"
