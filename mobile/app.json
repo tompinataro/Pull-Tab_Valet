@@ -16,7 +16,7 @@
     "updates": {},
     "ios": {
       "bundleIdentifier": "com.tixpy.pulltabvalet",
-      "buildNumber": "5",
+      "buildNumber": "6",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow Pull Tab Valet to scan pull-tab box UPC codes."
       }

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { supabase } from './supabase';
+import { getSupabaseOrThrow, hasSupabaseConfig } from './supabase';
 
 const DEMO_SESSION_KEY = 'ptv-demo-session';
 
@@ -17,6 +17,8 @@ export async function isDemoSessionActive() {
 
 export async function getIsSignedIn() {
   if (await isDemoSessionActive()) return true;
+  if (!hasSupabaseConfig) return false;
+  const supabase = getSupabaseOrThrow();
   const { data } = await supabase.auth.getSession();
   return Boolean(data.session);
 }
@@ -27,6 +29,7 @@ export async function signInWithAppAuth(email: string, password: string) {
     return { mode: 'demo' as const };
   }
 
+  const supabase = getSupabaseOrThrow();
   const { error } = await supabase.auth.signInWithPassword({
     email: normalizeEmail(email),
     password,
@@ -45,6 +48,11 @@ export async function signOutFromAppAuth() {
     await AsyncStorage.removeItem(DEMO_SESSION_KEY);
   }
 
+  if (!hasSupabaseConfig) {
+    return;
+  }
+
+  const supabase = getSupabaseOrThrow();
   const { error } = await supabase.auth.signOut();
   if (error && !demoSession) {
     throw error;

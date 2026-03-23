@@ -1,12 +1,13 @@
 import { isDemoSessionActive, DEMO_EMAIL } from './auth';
 import { createDemoVenue, getDemoVenue, listDemoReports, listDemoVenues, updateDemoVenue } from './demo-data';
-import { supabase } from './supabase';
+import { getSupabaseOrThrow } from './supabase';
 import type { AuditEventType, Box, BoxStatus, Deposit, Prize, Report, Venue } from './types';
 
 export async function getCurrentUserEmail(): Promise<string | null> {
   if (await isDemoSessionActive()) {
     return DEMO_EMAIL;
   }
+  const supabase = getSupabaseOrThrow();
   const { data } = await supabase.auth.getUser();
   return data.user?.email ?? null;
 }
@@ -15,6 +16,7 @@ export async function listVenues(): Promise<Venue[]> {
   if (await isDemoSessionActive()) {
     return listDemoVenues();
   }
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('venues')
     .select('*')
@@ -27,6 +29,7 @@ export async function getVenue(id: string): Promise<Venue> {
   if (await isDemoSessionActive()) {
     return getDemoVenue(id);
   }
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase.from('venues').select('*').eq('id', id).single();
   if (error) throw error;
   return data as Venue;
@@ -36,6 +39,7 @@ export async function createVenue(input: { name: string; address?: string; notes
   if (await isDemoSessionActive()) {
     return createDemoVenue(input);
   }
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('venues')
     .insert({ name: input.name, address: input.address ?? null, notes: input.notes ?? null })
@@ -60,6 +64,7 @@ export async function updateVenue(
   if (await isDemoSessionActive()) {
     return updateDemoVenue(id, input);
   }
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('venues')
     .update({ name: input.name, address: input.address ?? null, notes: input.notes ?? null })
@@ -71,6 +76,7 @@ export async function updateVenue(
 }
 
 export async function getOrCreateBoxByVenueUpc(venueId: string, upc: string): Promise<Box> {
+  const supabase = getSupabaseOrThrow();
   const { data: existing, error: selErr } = await supabase
     .from('boxes')
     .select('*')
@@ -98,12 +104,14 @@ export async function getOrCreateBoxByVenueUpc(venueId: string, upc: string): Pr
 }
 
 export async function getBox(boxId: string): Promise<Box> {
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase.from('boxes').select('*').eq('id', boxId).single();
   if (error) throw error;
   return data as Box;
 }
 
 export async function listDeposits(boxId: string): Promise<Deposit[]> {
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('deposits')
     .select('*')
@@ -114,6 +122,7 @@ export async function listDeposits(boxId: string): Promise<Deposit[]> {
 }
 
 export async function listPrizes(boxId: string): Promise<Prize[]> {
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('prizes')
     .select('*')
@@ -124,6 +133,7 @@ export async function listPrizes(boxId: string): Promise<Prize[]> {
 }
 
 export async function listAuditEventsForBox(boxId: string) {
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('audit_events')
     .select('*')
@@ -136,6 +146,7 @@ export async function listAuditEventsForBox(boxId: string) {
 
 export async function addDeposit(boxId: string, venueId: string, amountDollars: number, note?: string) {
   const amount_cents = Math.round(amountDollars * 100);
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('deposits')
     .insert({ box_id: boxId, amount_cents, note: note ?? null })
@@ -155,6 +166,7 @@ export async function addDeposit(boxId: string, venueId: string, amountDollars: 
 
 export async function addPrize(boxId: string, venueId: string, amountDollars: number, note?: string) {
   const amount_cents = Math.round(amountDollars * 100);
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('prizes')
     .insert({ box_id: boxId, amount_cents, note: note ?? null })
@@ -173,6 +185,7 @@ export async function addPrize(boxId: string, venueId: string, amountDollars: nu
 }
 
 export async function setBoxStatus(boxId: string, venueId: string, status: BoxStatus) {
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('boxes')
     .update({ status })
@@ -201,6 +214,7 @@ export async function createAuditEvent(input: {
   payload: any;
 }) {
   const actor_email = await getCurrentUserEmail();
+  const supabase = getSupabaseOrThrow();
   const { error } = await supabase.from('audit_events').insert({
     event_type: input.event_type,
     venue_id: input.venue_id,
@@ -218,6 +232,7 @@ export async function createReportRow(input: {
   storage_path: string;
   mime_type?: string;
 }) {
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('reports')
     .insert({
@@ -238,6 +253,7 @@ export async function listReports(filters: { venueId?: string; from?: string; to
   if (await isDemoSessionActive()) {
     return listDemoReports(filters);
   }
+  const supabase = getSupabaseOrThrow();
   let q = supabase.from('reports').select('*').order('created_at', { ascending: false });
   if (filters.venueId) q = q.eq('venue_id', filters.venueId);
   if (filters.from) q = q.gte('created_at', filters.from);
@@ -251,6 +267,7 @@ export async function getSignedReportUrl(bucket: string, path: string, expiresSe
   if (await isDemoSessionActive()) {
     return `https://example.com/${bucket}/${path}?expires=${expiresSec}`;
   }
+  const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresSec);
   if (error) throw error;
   return data.signedUrl;

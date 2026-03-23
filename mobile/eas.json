@@ -11,7 +11,9 @@
         "resourceClass": "m-medium"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:5100"
+        "EXPO_PUBLIC_API_URL": "http://localhost:5100",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://qrpieemdkmwbpvneaysg.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_TsFy2IYtQjiTAIlgJKWfkg_1Gm1oKJY"
       }
     },
     "preview": {
@@ -24,14 +26,18 @@
         "gradleCommand": ":app:assembleRelease"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.example.com"
+        "EXPO_PUBLIC_API_URL": "https://api.example.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://qrpieemdkmwbpvneaysg.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_TsFy2IYtQjiTAIlgJKWfkg_1Gm1oKJY"
       }
     },
     "staging": {
       "developmentClient": false,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.example.com"
+        "EXPO_PUBLIC_API_URL": "https://api.example.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://qrpieemdkmwbpvneaysg.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_TsFy2IYtQjiTAIlgJKWfkg_1Gm1oKJY"
       },
       "channel": "staging",
       "ios": {
@@ -43,6 +49,8 @@
       "distribution": "store",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.example.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://qrpieemdkmwbpvneaysg.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_TsFy2IYtQjiTAIlgJKWfkg_1Gm1oKJY",
         "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
         "NPM_CONFIG_FORCE": "true"
       },
