@@ -1,6 +1,8 @@
-export function formatTime(ts: string): string {
+export function formatTime(ts?: string | null): string {
+  if (!ts) return '—';
   try {
     const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return '—';
     // Prefer Intl formatting without seconds; fallback to manual
     try {
       return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' } as any);
@@ -15,4 +17,3 @@ export function formatTime(ts: string): string {
     return '—';
   }
 }
-

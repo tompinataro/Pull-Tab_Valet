@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { colors, spacing } from '../theme';
 
 type Props = { type?: 'info' | 'success' | 'error'; message: string };
 
 export default function Banner({ type = 'info', message }: Props) {
-  const style = [styles.base];
+  const style: StyleProp<ViewStyle> = [styles.base];
   if (type === 'success') style.push(styles.success);
   else if (type === 'error') style.push(styles.error);
   else style.push(styles.info);

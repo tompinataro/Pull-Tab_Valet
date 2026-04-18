@@ -154,6 +154,10 @@ export default function ScanScreen() {
   }
 
   function openManual() {
+    if (!selectedVenue) {
+      openVenuePicker().catch(() => {});
+      return;
+    }
     setManualUpc('');
     setManualOpen(true);
   }
@@ -181,7 +185,7 @@ export default function ScanScreen() {
       </View>
 
       <Text style={styles.p}>
-        Venue required every time. {isDesktop ? 'Desktop uses manual entry.' : 'Manual entry available.'}
+        Venue required every time. {isDesktop ? 'Desktop uses manual code entry for each venue.' : 'Manual entry is available if scanning is unavailable.'}
       </Text>
 
       {!isDesktop && !permissionGranted ? (
@@ -191,11 +195,11 @@ export default function ScanScreen() {
       ) : null}
 
       <Pressable onPress={beginScan} style={styles.primaryBtn}>
-        <Text style={styles.primaryText}>Choose Venue & Scan</Text>
+        <Text style={styles.primaryText}>{isDesktop ? 'Choose Venue & Enter Code' : 'Choose Venue & Scan'}</Text>
       </Pressable>
 
       <Pressable onPress={openManual} style={styles.secondaryBtn}>
-        <Text style={styles.secondaryText}>Enter code manually</Text>
+        <Text style={styles.secondaryText}>{selectedVenue ? 'Enter code for selected venue' : 'Choose venue first'}</Text>
       </Pressable>
 
       {/* Camera modal (native only) */}

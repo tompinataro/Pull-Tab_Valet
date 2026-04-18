@@ -83,7 +83,7 @@ export default function ReportsScreen(_props: Props) {
           const rangeLabel = buildRangeLabel(res.range, 'custom', startIso, endIso);
           const summaryLines = buildSummaryLines(rows);
           const subject = 'Field Tech Summary (Custom)';
-          const body = `Range: ${rangeLabel}\nFrequency: custom\n\n${summaryLines.join('\n')}\n\nGenerated from RouteMaster.`;
+          const body = `Range: ${rangeLabel}\nFrequency: custom\n\n${summaryLines.join('\n')}\n\nGenerated from Pull Tab Valet.`;
           if (await MailComposer.isAvailableAsync()) {
             await MailComposer.composeAsync({ subject, body, recipients: cleaned.map(r => r.email) });
           } else {
@@ -127,7 +127,7 @@ export default function ReportsScreen(_props: Props) {
         const rows = res.rows || [];
         const rangeLabel = buildRangeLabel(res.range, freq as FrequencyValue);
         const summaryLines = buildSummaryLines(rows);
-        const body = `Range: ${rangeLabel}\nFrequency: ${freq}\n\n${summaryLines.join('\n')}\n\nGenerated from RouteMaster.`;
+        const body = `Range: ${rangeLabel}\nFrequency: ${freq}\n\n${summaryLines.join('\n')}\n\nGenerated from Pull Tab Valet.`;
         const mailto = `mailto:${encodeURIComponent(emails.join(','))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         if (await MailComposer.isAvailableAsync()) {
           await MailComposer.composeAsync({ subject, body, recipients: emails });
@@ -280,10 +280,14 @@ export default function ReportsScreen(_props: Props) {
                     <Text numberOfLines={1} style={[
                       styles.cell,
                       styles.duration,
-                      item.durationFlagged ? styles.warnText : null,
-                    ]}>{isTotal ? '' : item.durationLabel}</Text>
-                    <Text numberOfLines={1} style={[styles.cell, styles.mileage, isTotal ? styles.totalText : null]}>{item.mileage?.toFixed?.(1) ?? item.mileage}</Text>
-                    <Text numberOfLines={1} style={[styles.cell, styles.contact, isTotal ? styles.totalText : null]}>{isTotal ? '' : truncateText(item.contactName || '—', 16)}</Text>
+                      (item.durationFlagged ?? item.durationFlag) ? styles.warnText : null,
+                    ]}>{isTotal ? '' : (item.durationLabel ?? item.durationFormatted ?? '—')}</Text>
+                    <Text numberOfLines={1} style={[styles.cell, styles.mileage, isTotal ? styles.totalText : null]}>
+                      {Number.isFinite(item.mileage ?? item.mileageDelta) ? (item.mileage ?? item.mileageDelta).toFixed(1) : '—'}
+                    </Text>
+                    <Text numberOfLines={1} style={[styles.cell, styles.contact, isTotal ? styles.totalText : null]}>
+                      {isTotal ? '' : truncateText(item.contactName || item.onSiteContact || '—', 16)}
+                    </Text>
                     <Text numberOfLines={1} style={[
                       styles.cell,
                       styles.geoValid,

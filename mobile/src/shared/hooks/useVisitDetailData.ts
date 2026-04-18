@@ -167,7 +167,7 @@ export function useVisitDetailData(options: Options) {
         timelyInstruction: timelyInstruction || undefined,
         checkInTs: checkInTs || undefined,
         checkOutTs: outTs,
-        checkOutLoc: await getLocation(),
+        checkOutLoc: (await getLocation()) || undefined,
         noteToOffice: noteToOffice || undefined,
         onSiteContact: onSiteContact || undefined,
         odometerReading: odometerReading || undefined,
@@ -234,14 +234,14 @@ export function useVisitDetailData(options: Options) {
       onSiteContact: onSiteContact || undefined,
       odometerReading: odometerReading || undefined,
     };
-    const payloadKey = JSON.stringify({ ...payloadBase, checkInLoc: checkInLocRef.current || null });
+      const payloadKey = JSON.stringify({ ...payloadBase, checkInLoc: checkInLocRef.current || undefined });
     if (payloadKey === lastAutoSavePayload.current) return;
     if (autoSaveTimer.current) {
       clearTimeout(autoSaveTimer.current);
     }
     autoSaveTimer.current = setTimeout(async () => {
       if (!token || !visit || !checkInTs || checkOutTs) return;
-      let loc = checkInLocRef.current;
+      let loc: { lat: number; lng: number } | undefined = checkInLocRef.current ?? undefined;
       if (!loc && persistCheckInLocation) {
         loc = await getLocation();
         if (loc) {

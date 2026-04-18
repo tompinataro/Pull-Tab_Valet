@@ -27,7 +27,7 @@ export default function SignInScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.h1}>Pull-Tab Valet</Text>
-      <Text style={styles.p}>Sign in</Text>
+      <Text style={styles.p}>Sign in to sync your venues, or use the prefilled demo account to explore the desktop app.</Text>
 
       <TextInput
         value={email}
@@ -53,6 +53,8 @@ export default function SignInScreen() {
       <Pressable style={[styles.btn, loading && styles.btnDisabled]} onPress={signIn} disabled={loading}>
         <Text style={styles.btnText}>{loading ? 'Signing in…' : 'Sign In'}</Text>
       </Pressable>
+
+      <Text style={styles.help}>Demo access is prefilled for first launch: you can sign in immediately and start with sample venues.</Text>
     </View>
   );
 }
@@ -80,4 +82,5 @@ const styles = StyleSheet.create({
   btnText: { color: 'white', fontWeight: '900' },
   btnDisabled: { opacity: 0.65 },
   error: { color: '#ff6b6b', marginBottom: 10 },
+  help: { color: '#8f90a6', fontSize: 12, lineHeight: 18, marginTop: 12 },
 });

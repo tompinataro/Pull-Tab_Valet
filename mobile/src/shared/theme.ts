@@ -5,9 +5,11 @@ export const colors = {
   text: '#0F172A',
   muted: '#64748B',
   border: '#E2E8F0',
+  buttonText: '#ffffff',
   successBg: '#e6ffed',
   successText: '#047857',
   danger: '#dc2626',
+  error: '#dc2626',
 };
 
 export const spacing = (n: number) => n * 4;

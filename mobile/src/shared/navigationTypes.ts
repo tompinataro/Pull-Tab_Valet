@@ -2,7 +2,7 @@
 export type RootStackParamList = {
   LoginLanding: undefined;
   LoginForm: undefined;
-  RouteList: { saved?: boolean; savedOffline?: boolean } | undefined;
+  RouteList: { saved?: boolean; savedOffline?: boolean; devResetTS?: number } | undefined;
   VisitDetail: { id: number };
   Home: undefined;
   About: undefined;
@@ -11,7 +11,9 @@ export type RootStackParamList = {
   FieldTechnicians: { mode?: 'all' } | undefined;
   ClientLocations: { mode?: 'all' } | undefined;
   ServiceRoutes: { mode?: 'all'; focusRouteId?: number } | undefined;
-  AllServiceRoutes: undefined;
+  AllServiceRoutes: { focusRouteId?: number } | undefined;
   AllFieldTechnicians: undefined;
+  EditFieldTech: { user: any };
+  ClientAssignments: { clients: any[] };
   Reports: undefined;
 };

@@ -24,6 +24,7 @@ import AllServiceRoutesScreen from './screens/AllServiceRoutesScreen';
 import AllFieldTechniciansScreen from './screens/AllFieldTechniciansScreen';
 import EditFieldTechScreen from './screens/EditFieldTechScreen';
 import ReportsScreen from './screens/ReportsScreen';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -133,6 +134,10 @@ function RootNavigator() {
 
 export default function App() {
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('ptv:renderer-mounted'));
+    }
+
     async function checkForUpdates() {
       if (!__DEV__ && Platform.OS !== 'web') {
         try {
@@ -155,25 +160,27 @@ export default function App() {
     }
   }, []);
   return (
-    <AuthProvider>
-      <GlobalBannerProvider>
-        <NavigationContainer
-          theme={{
-            ...DefaultTheme,
-            colors: {
-              ...DefaultTheme.colors,
-              primary: colors.primary,
-              background: colors.background,
-              card: colors.card,
-              text: colors.text,
-              border: colors.border,
-            },
-          }}
-        >
-          <StatusBar style="auto" />
-          <RootNavigator />
-        </NavigationContainer>
-      </GlobalBannerProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <GlobalBannerProvider>
+          <NavigationContainer
+            theme={{
+              ...DefaultTheme,
+              colors: {
+                ...DefaultTheme.colors,
+                primary: colors.primary,
+                background: colors.background,
+                card: colors.card,
+                text: colors.text,
+                border: colors.border,
+              },
+            }}
+          >
+            <StatusBar style="auto" />
+            <RootNavigator />
+          </NavigationContainer>
+        </GlobalBannerProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

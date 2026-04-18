@@ -1,6 +1,6 @@
 {
   "name": "pull-tab-valet-desktop",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Desktop wrapper for Pull Tab Valet",
   "main": "main.js",
   "private": true,
@@ -10,6 +10,8 @@
     "build:web": "npm --prefix ../mobile run export:web && node scripts/fix-web-paths.mjs",
     "dist:mac": "npm run build:web && electron-builder --mac --publish never",
     "dist:mas": "npm run build:web && electron-builder --mac mas --publish never",
+    "dist:mas:app": "npm run build:web && electron-builder --mac mas --dir --publish never",
+    "dist:mas:pkg:manual": "npm run dist:mas:app && node scripts/build-mas-pkg.mjs",
     "dist:mas:pkg": "npm run build:web && electron-builder --mac mas pkg --publish never",
     "dist:mas:pkg:universal": "npm run build:web && electron-builder --mac mas pkg --universal --publish never"
   },
@@ -33,17 +35,21 @@
     ],
     "mac": {
       "category": "public.app-category.business",
+      "minimumSystemVersion": "12.0.0",
+      "bundleVersion": "1.0.5",
       "target": [
         "dmg",
         "zip"
       ],
       "extendInfo": {
-        "ElectronTeamID": "S4Y9X74BAL"
+        "ElectronTeamID": "S4Y9X74BAL",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "icon": "assets/icon.icns"
     },
     "mas": {
       "category": "public.app-category.business",
+      "minimumSystemVersion": "12.0.0",
       "identity": "D862181FF028D708220A3DE2BECF5FDE242D5C65",
       "provisioningProfile": "/Users/tompinataro/Library/MobileDevice/ProvisioningProfiles/Pull_Tab_Valet_Desktop_MAS.provisionprofile",
       "entitlements": "entitlements.mas.plist",
@@ -51,12 +57,13 @@
       "gatekeeperAssess": false,
       "hardenedRuntime": false,
       "extendInfo": {
-        "ElectronTeamID": "S4Y9X74BAL"
+        "ElectronTeamID": "S4Y9X74BAL",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "icon": "assets/icon.icns"
     },
     "pkg": {
-      "identity": "Thomas Anthony Pinataro (S4Y9X74BAL)"
+      "identity": "3rd Party Mac Developer Installer: Thomas Anthony Pinataro (S4Y9X74BAL)"
     }
   },
   "devDependencies": {

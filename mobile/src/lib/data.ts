@@ -1,7 +1,22 @@
 import { isDemoSessionActive, DEMO_EMAIL } from './auth';
-import { createDemoVenue, getDemoVenue, listDemoReports, listDemoVenues, updateDemoVenue } from './demo-data';
+import {
+  addDemoDeposit,
+  addDemoPrize,
+  createDemoReportRow,
+  createDemoVenue,
+  getDemoBox,
+  getDemoVenue,
+  getOrCreateDemoBoxByVenueUpc,
+  listDemoAuditEventsForBox,
+  listDemoDeposits,
+  listDemoPrizes,
+  listDemoReports,
+  listDemoVenues,
+  setDemoBoxStatus,
+  updateDemoVenue,
+} from './demo-data';
 import { getSupabaseOrThrow } from './supabase';
-import type { AuditEventType, Box, BoxStatus, Deposit, Prize, Report, Venue } from './types';
+import type { AuditEvent, AuditEventType, Box, BoxStatus, Deposit, Prize, Report, Venue } from './types';
 
 export async function getCurrentUserEmail(): Promise<string | null> {
   if (await isDemoSessionActive()) {
@@ -76,6 +91,9 @@ export async function updateVenue(
 }
 
 export async function getOrCreateBoxByVenueUpc(venueId: string, upc: string): Promise<Box> {
+  if (await isDemoSessionActive()) {
+    return getOrCreateDemoBoxByVenueUpc(venueId, upc);
+  }
   const supabase = getSupabaseOrThrow();
   const { data: existing, error: selErr } = await supabase
     .from('boxes')
@@ -104,6 +122,9 @@ export async function getOrCreateBoxByVenueUpc(venueId: string, upc: string): Pr
 }
 
 export async function getBox(boxId: string): Promise<Box> {
+  if (await isDemoSessionActive()) {
+    return getDemoBox(boxId);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase.from('boxes').select('*').eq('id', boxId).single();
   if (error) throw error;
@@ -111,6 +132,9 @@ export async function getBox(boxId: string): Promise<Box> {
 }
 
 export async function listDeposits(boxId: string): Promise<Deposit[]> {
+  if (await isDemoSessionActive()) {
+    return listDemoDeposits(boxId);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('deposits')
@@ -122,6 +146,9 @@ export async function listDeposits(boxId: string): Promise<Deposit[]> {
 }
 
 export async function listPrizes(boxId: string): Promise<Prize[]> {
+  if (await isDemoSessionActive()) {
+    return listDemoPrizes(boxId);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('prizes')
@@ -132,7 +159,10 @@ export async function listPrizes(boxId: string): Promise<Prize[]> {
   return data as Prize[];
 }
 
-export async function listAuditEventsForBox(boxId: string) {
+export async function listAuditEventsForBox(boxId: string): Promise<AuditEvent[]> {
+  if (await isDemoSessionActive()) {
+    return listDemoAuditEventsForBox(boxId);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('audit_events')
@@ -146,6 +176,9 @@ export async function listAuditEventsForBox(boxId: string) {
 
 export async function addDeposit(boxId: string, venueId: string, amountDollars: number, note?: string) {
   const amount_cents = Math.round(amountDollars * 100);
+  if (await isDemoSessionActive()) {
+    return addDemoDeposit(boxId, venueId, amount_cents, note);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('deposits')
@@ -166,6 +199,9 @@ export async function addDeposit(boxId: string, venueId: string, amountDollars: 
 
 export async function addPrize(boxId: string, venueId: string, amountDollars: number, note?: string) {
   const amount_cents = Math.round(amountDollars * 100);
+  if (await isDemoSessionActive()) {
+    return addDemoPrize(boxId, venueId, amount_cents, note);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('prizes')
@@ -185,6 +221,9 @@ export async function addPrize(boxId: string, venueId: string, amountDollars: nu
 }
 
 export async function setBoxStatus(boxId: string, venueId: string, status: BoxStatus) {
+  if (await isDemoSessionActive()) {
+    return setDemoBoxStatus(boxId, venueId, status);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('boxes')
@@ -213,6 +252,9 @@ export async function createAuditEvent(input: {
   box_id: string | null;
   payload: any;
 }) {
+  if (await isDemoSessionActive()) {
+    return;
+  }
   const actor_email = await getCurrentUserEmail();
   const supabase = getSupabaseOrThrow();
   const { error } = await supabase.from('audit_events').insert({
@@ -232,6 +274,9 @@ export async function createReportRow(input: {
   storage_path: string;
   mime_type?: string;
 }) {
+  if (await isDemoSessionActive()) {
+    return createDemoReportRow(input);
+  }
   const supabase = getSupabaseOrThrow();
   const { data, error } = await supabase
     .from('reports')

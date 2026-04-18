@@ -14,7 +14,11 @@ function withBase(path: string) {
   return `${API_BASE.replace(/\/$/, '')}${path}`;
 }
 
-async function fetchJson(input: RequestInfo | URL, init?: RequestInit & { timeoutMs?: number }, _allowRetry = true) {
+async function fetchJson<T = any>(
+  input: RequestInfo | URL,
+  init?: RequestInit & { timeoutMs?: number },
+  _allowRetry = true
+): Promise<T> {
   const { timeoutMs = 30000, ...rest } = init || {};
   const ac = new AbortController();
   const timeout = setTimeout(() => ac.abort(), timeoutMs);
@@ -44,7 +48,7 @@ async function fetchJson(input: RequestInfo | URL, init?: RequestInit & { timeou
                 const headers = new Headers(rest.headers as any);
                 headers.set('Authorization', `Bearer ${newToken}`);
                 // Retry original request once with new token
-                const retryRes = await fetchJson(input, { ...(rest as any), headers, body: originalBody }, false);
+                const retryRes = await fetchJson<T>(input, { ...(rest as any), headers, body: originalBody }, false);
                 return retryRes;
               }
             }
@@ -54,7 +58,7 @@ async function fetchJson(input: RequestInfo | URL, init?: RequestInit & { timeou
       }
       throw new Error(`${res.status} ${res.statusText}${text ? `: ${text}` : ''}`);
     }
-    return res.json();
+    return res.json() as Promise<T>;
   } finally {
     clearTimeout(timeout);
   }
@@ -195,6 +199,8 @@ export type AdminClient = {
   assigned_user_id?: number | null;
   assigned_user_name?: string | null;
   assigned_user_email?: string | null;
+  service_route_id?: number | null;
+  service_route_name?: string | null;
   scheduled_time?: string | null;
   timely_note?: string | null;
   latitude?: number | null;
@@ -353,13 +359,17 @@ export type ReportSummaryRow = {
   visitDate?: string | null;
   rowType?: 'data' | 'total' | 'spacer';
   durationFormatted: string;
+  durationLabel?: string;
   durationMinutes?: number;
   mileageDelta: number;
+  mileage?: number;
   onSiteContact?: string | null;
+  contactName?: string | null;
   odometerReading?: number | null;
   geoValidated?: boolean;
   distanceFromClientFeet?: number | null;
   durationFlag?: boolean;
+  durationFlagged?: boolean;
   geoFlag?: boolean;
 };
 

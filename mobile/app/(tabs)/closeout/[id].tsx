@@ -7,6 +7,11 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 import { getBox, listDeposits, listPrizes, setBoxStatus, createReportRow } from '../../../src/lib/data';
 import { supabase } from '../../../src/lib/supabase';
+import { isDemoSessionActive } from '../../../src/lib/auth';
+
+const FileSystemCompat = FileSystem as any;
+const CACHE_DIR: string = FileSystemCompat.cacheDirectory ?? FileSystemCompat.Paths?.cache?.uri ?? '';
+const ENCODING = FileSystemCompat.EncodingType ?? { UTF8: 'utf8', Base64: 'base64' };
 
 function centsToDollars(cents: number) {
   return (cents / 100).toFixed(2);
@@ -58,8 +63,8 @@ export default function CloseoutScreen() {
       .map((r) => r.map((x) => `"${String(x).replaceAll('"', '""')}"`).join(','))
       .join('\n');
 
-    const csvPath = `${FileSystem.cacheDirectory}closeout-${params.boxUpc}-${stamp}.csv`;
-    await FileSystem.writeAsStringAsync(csvPath, csv, { encoding: FileSystem.EncodingType.UTF8 });
+    const csvPath = `${CACHE_DIR}closeout-${params.boxUpc}-${stamp}.csv`;
+    await FileSystem.writeAsStringAsync(csvPath, csv, { encoding: ENCODING.UTF8 });
 
     // PDF
     const pdfDoc = await PDFDocument.create();
@@ -86,17 +91,18 @@ export default function CloseoutScreen() {
     }
 
     const pdfBytes = await pdfDoc.save();
-    const pdfPath = `${FileSystem.cacheDirectory}closeout-${params.boxUpc}-${stamp}.pdf`;
+    const pdfPath = `${CACHE_DIR}closeout-${params.boxUpc}-${stamp}.pdf`;
     const pdfBase64 = fromByteArray(pdfBytes);
-    await FileSystem.writeAsStringAsync(pdfPath, pdfBase64, { encoding: FileSystem.EncodingType.Base64 });
+    await FileSystem.writeAsStringAsync(pdfPath, pdfBase64, { encoding: ENCODING.Base64 });
 
     return { csvPath, pdfPath, stamp };
   }
 
   async function uploadFile(bucket: string, storagePath: string, localPath: string, contentType: string) {
-    const base64 = await FileSystem.readAsStringAsync(localPath, { encoding: FileSystem.EncodingType.Base64 });
+    const base64 = await FileSystem.readAsStringAsync(localPath, { encoding: ENCODING.Base64 });
     const bytes = toByteArray(base64);
-    const { data, error } = await supabase.storage.from(bucket).upload(storagePath, bytes, {
+    const storage = supabase!;
+    const { data, error } = await storage.storage.from(bucket).upload(storagePath, bytes, {
       contentType,
       upsert: true,
     });
@@ -120,6 +126,7 @@ export default function CloseoutScreen() {
 
     setLoading(true);
     try {
+      const demoMode = await isDemoSessionActive();
       const box = await getBox(id);
       const [deposits, prizes] = await Promise.all([listDeposits(id), listPrizes(id)]);
       const depTotal = deposits.reduce((s, d) => s + d.amount_cents, 0);
@@ -147,15 +154,21 @@ export default function CloseoutScreen() {
       const pdfStoragePath = `${basePath}/closeout.pdf`;
       const csvStoragePath = `${basePath}/closeout.csv`;
 
-      await uploadFile('reports', pdfStoragePath, pdfPath, 'application/pdf');
-      await uploadFile('reports', csvStoragePath, csvPath, 'text/csv');
+      if (!demoMode) {
+        if (!supabase) {
+          throw new Error('Remote sync is not configured in this build.');
+        }
+
+        await uploadFile('reports', pdfStoragePath, pdfPath, 'application/pdf');
+        await uploadFile('reports', csvStoragePath, csvPath, 'text/csv');
+      }
 
       await Promise.all([
         createReportRow({ venue_id: box.venue_id, box_id: box.id, type: 'closeout_pdf', storage_path: pdfStoragePath, mime_type: 'application/pdf' }),
         createReportRow({ venue_id: box.venue_id, box_id: box.id, type: 'closeout_csv', storage_path: csvStoragePath, mime_type: 'text/csv' }),
       ]);
 
-      Alert.alert('Closed', 'Closeout report generated and uploaded.');
+      Alert.alert('Closed', demoMode ? 'Closeout report generated in demo mode.' : 'Closeout report generated and uploaded.');
       router.replace({ pathname: '/(tabs)/box/[id]', params: { id: box.id, venueId: box.venue_id } });
     } catch (e: any) {
       Alert.alert('Closeout', String(e?.message || e));
