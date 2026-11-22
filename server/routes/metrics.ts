@@ -36,7 +36,9 @@ export function requestMetrics(req: Request, res: Response, next: NextFunction) 
       const labels = { method: req.method, path, status } as const;
       httpRequestsTotal.inc(labels);
       httpRequestDurationSeconds.observe(labels, durationSec);
-    } catch {}
+    } catch {
+      return; // Optional metrics must not disrupt response completion.
+    }
   });
   next();
 }

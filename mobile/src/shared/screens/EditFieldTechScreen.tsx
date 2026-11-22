@@ -24,16 +24,22 @@ export default function EditFieldTechScreen({ route, navigation }: any) {
     if (password && password.trim().length > 0 && password.trim().length < 8) {
       return;
     }
+    let updatingProfile = false;
     try {
       setSaving(true);
+      updatingProfile = true;
       await adminUpdateUser(token, user.id, {
         name,
         email,
         phone,
         managed_password: password ? password.trim() : undefined,
       });
+      updatingProfile = false;
       navigation.goBack();
-    } catch (e) {
+    } catch {
+      if (updatingProfile) {
+        showBanner({ type: 'error', message: 'Couldn’t save changes. Try again.' });
+      }
     } finally {
       setSaving(false);
     }

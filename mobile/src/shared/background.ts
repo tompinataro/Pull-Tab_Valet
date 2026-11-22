@@ -18,11 +18,15 @@ TaskManager.defineTask(TASK_NAME, async () => {
     try {
       const res = await flushQueue(token);
       sent = res.sent;
-    } catch {}
+    } catch {
+      // A failed queue flush leaves sent at zero; still attempt a route refresh.
+    }
     try {
       // Touch routes to update local server-truth flags if available
-      await fetchTodayRoutes(token).catch(() => {});
-    } catch {}
+      await fetchTodayRoutes(token);
+    } catch {
+      // This advisory refresh does not change the queue-derived task result.
+    }
     return sent > 0 ? (FETCH_RESULT.NewData ?? 'NewData') : (FETCH_RESULT.NoData ?? 'NoData');
   } catch {
     return FETCH_RESULT.Failed ?? 'Failed';
@@ -55,5 +59,7 @@ export async function unregisterBackgroundSync() {
     if (registered) {
       await BackgroundFetch.unregisterTaskAsync(TASK_NAME);
     }
-  } catch {}
+  } catch {
+    return; // Registration lookup and cleanup are best effort on shutdown.
+  }
 }

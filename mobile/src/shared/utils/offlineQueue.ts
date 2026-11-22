@@ -62,7 +62,7 @@ export async function enqueueSubmission(id: number, payload: any) {
 }
 
 export async function flushQueue(token: string): Promise<{ sent: number; remaining: number }> {
-  let items = await readQueue();
+  const items = await readQueue();
   if (!items.length) return { sent: 0, remaining: 0 };
   const keep: QueueItem[] = [];
   let sent = 0;

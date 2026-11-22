@@ -21,8 +21,8 @@ export default function ReportsScreen() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [venueId, setVenueId] = useState<string | undefined>(undefined);
 
-  const [from, setFrom] = useState(() => toIsoDayStart(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)));
-  const [to, setTo] = useState(() => toIsoDayEnd(new Date()));
+  const [from] = useState(() => toIsoDayStart(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)));
+  const [to] = useState(() => toIsoDayEnd(new Date()));
 
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,9 +43,9 @@ export default function ReportsScreen() {
     }
   }
 
+  // Reload reports when the selected venue changes.
   useEffect(() => {
     refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [venueId]);
 
   const venueName = useMemo(() => {

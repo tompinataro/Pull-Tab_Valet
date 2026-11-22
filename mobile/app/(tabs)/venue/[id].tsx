@@ -29,9 +29,9 @@ export default function VenueDetailScreen() {
     }
   }
 
+  // Reload venue details when the route id changes.
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function save() {

@@ -1,11 +1,9 @@
 import express from 'express';
 import { randomBytes } from 'crypto';
-import { dbQuery, hasDb } from '../db';
+import { dbQuery, hasDb, runSeedTransaction } from '../db';
 import { AuthMiddleware, UserRole } from '../auth';
 
-const encryptLib = require('../modules/encryption') as {
-  encryptPassword: (password: string) => string;
-};
+import encryptLib = require('../modules/encryption');
 
 function ensureDatabase(res: express.Response): boolean {
   if (!hasDb()) {
@@ -678,15 +676,9 @@ export function createAdminRouter(requireAuth: AuthMiddleware, requireAdmin: Aut
       const raw = fs.readFileSync(seedPath, 'utf8');
       const cleaned = raw.replace(/--.*$/gm, '\n');
       const parts = cleaned.split(/;\\s*\\n/).map((s: string) => s.trim()).filter(Boolean);
-      await dbQuery('BEGIN');
-      for (const stmt of parts) {
-        if (!stmt) continue;
-        await dbQuery(stmt);
-      }
-      await dbQuery('COMMIT');
+      await runSeedTransaction(parts);
       res.json({ ok: true, appliedStatements: parts.length });
     } catch (e: any) {
-      try { await dbQuery('ROLLBACK'); } catch {}
       console.error('[admin/run-seed] error', e);
       res.status(500).json({ ok: false, error: e?.message ?? 'failed to run seed' });
     }

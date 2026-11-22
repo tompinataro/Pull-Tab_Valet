@@ -15,7 +15,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
         // console.log('/api/Visits received a request.')
 
-    sqlText = `
+    const sqlText = `
         SELECT * FROM "client_visits";
     `;
 

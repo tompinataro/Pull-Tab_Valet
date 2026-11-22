@@ -16,7 +16,9 @@ export async function ensureToday(): Promise<void> {
       await AsyncStorage.multiRemove([KEY, KEY_PROGRESS]);
       await AsyncStorage.setItem(KEY_DAY, t);
     }
-  } catch {}
+  } catch {
+    return; // A failed rollover is retried whenever the saved day is still stale.
+  }
 }
 
 export async function getCompleted(): Promise<Set<number>> {
@@ -89,5 +91,7 @@ export async function syncServerTruth(completedIds: number[], inProgressIds: num
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(Array.from(new Set(completedIds))));
     await AsyncStorage.setItem(KEY_PROGRESS, JSON.stringify(Array.from(new Set(inProgressIds))));
-  } catch {}
+  } catch {
+    return; // Server flags can still be shown by the caller if the local cache write fails.
+  }
 }

@@ -1,8 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
 const pluginFile = path.join(
-  __dirname,
+  scriptDir,
   '..',
   'node_modules',
   '@react-native',

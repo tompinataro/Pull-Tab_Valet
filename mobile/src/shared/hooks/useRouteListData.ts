@@ -56,18 +56,18 @@ export function useRouteListData(token?: string | null) {
     }
   }, []);
 
-  const load = useCallback(async (opts?: LoadOptions) => {
-    if (!token) return;
+  const load = useCallback(async (opts?: LoadOptions): Promise<boolean> => {
+    if (!token) return false;
     setLoading(true);
     try {
       setError(null);
-      try { await flushQueue(token); } catch {}
+      try { await flushQueue(token); } catch { /* Queue retry is best effort here; route fetch below should still run. */ }
       try {
         const stats = await getQueueStats();
         if (stats.pending > 0 && stats.maxAttempts >= 3) {
           showBanner({ type: 'info', message: `Retrying ${stats.pending} submission${stats.pending > 1 ? 's' : ''} - will auto-resend` });
         }
-      } catch {}
+      } catch { /* The retry banner is advisory; a stats failure does not block route fetch. */ }
       const res = await fetchTodayRoutes(token);
       const deduped = dedupeRoutes(res.routes);
       deduped.sort((a, b) => (a.clientName || '').localeCompare(b.clientName || ''));
@@ -85,18 +85,24 @@ export function useRouteListData(token?: string | null) {
           }
         }
         if (serverCompleted.size || serverInProg.size) {
-          try { await syncServerTruth(Array.from(serverCompleted), Array.from(serverInProg)); } catch {}
+          try { await syncServerTruth(Array.from(serverCompleted), Array.from(serverInProg)); } catch { /* The server state still updates this view when local persistence fails. */ }
           setCompleted(serverCompleted);
           setInProgress(serverInProg);
         } else {
           await refreshLocalState();
         }
         if (resetRequested) setResetRequested(false);
-      } catch {}
+      } catch {
+        // The route list is already visible; a failed local flag refresh is not a route-fetch error.
+        return false;
+      }
+      return true;
     } catch (e: any) {
       const msg = e?.message ?? 'Failed to load routes';
       setError(msg);
-      showBanner({ type: 'error', message: msg });
+      // Reset reports the overall outcome below; ordinary route loads still display their error.
+      if (!opts?.reset) showBanner({ type: 'error', message: msg });
+      return false;
     } finally {
       setLoading(false);
     }
@@ -108,9 +114,11 @@ export function useRouteListData(token?: string | null) {
   }, [load]);
 
   const triggerReset = useCallback(async () => {
+    let serverConfirmed = false;
+    let refreshCompleted = false;
     try {
       if (token) {
-        try { await resetMyVisitState(token); } catch {}
+        try { serverConfirmed = (await resetMyVisitState(token))?.ok === true; } catch { serverConfirmed = false; }
       }
       setResetRequested(true);
       setCompleted(new Set());
@@ -118,9 +126,12 @@ export function useRouteListData(token?: string | null) {
       await ensureToday();
       await pruneToIds([]);
       await syncServerTruth([], []);
-      await load({ reset: true });
-      showBanner({ type: 'info', message: 'Route state reset' });
-    } catch {}
+      refreshCompleted = await load({ reset: true });
+    } catch { refreshCompleted = false; }
+
+    const serverMessage = serverConfirmed ? 'Server reset confirmed.' : 'Server reset wasn’t confirmed.';
+    const refreshMessage = refreshCompleted ? '' : ' The route list refresh wasn’t confirmed.';
+    showBanner({ type: serverConfirmed && refreshCompleted ? 'info' : 'error', message: serverMessage + refreshMessage });
   }, [token, load]);
 
   const openMaps = useCallback(async (address?: string | null) => {
@@ -183,7 +194,7 @@ export function useRouteListData(token?: string | null) {
               if (stats.pending > 0 && stats.maxAttempts >= 3) {
                 showBanner({ type: 'info', message: `Retrying ${stats.pending} submission${stats.pending > 1 ? 's' : ''} - will auto-resend` });
               }
-            } catch {}
+            } catch { /* A retry-stats failure only skips the advisory banner on app resume. */ }
           }).catch(() => {});
         }
         load();
@@ -203,7 +214,7 @@ export function useRouteListData(token?: string | null) {
             if (stats.pending > 0 && stats.maxAttempts >= 3) {
               showBanner({ type: 'info', message: `Retrying ${stats.pending} submission${stats.pending > 1 ? 's' : ''} - will auto-resend` });
             }
-          } catch {}
+          } catch { /* A retry-stats failure only skips the advisory banner after reconnect. */ }
         }).catch(() => {});
       }
       load();

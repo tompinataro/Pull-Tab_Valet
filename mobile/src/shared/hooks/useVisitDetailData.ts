@@ -93,12 +93,12 @@ export function useVisitDetailData(options: Options) {
                 checkInLocRef.current = parsed;
               }
             }
-          } catch {}
+          } catch { /* Unreadable cached coordinates must not prevent opening the visit. */ }
         }
         setCheckOutTs(null);
         setSubmitError(null);
-        try { await addInProgress(id); } catch {}
-        try { await markVisitInProgress(id, token); } catch {}
+        try { await addInProgress(id); } catch { /* This local in-progress marker is best effort; still try the server marker. */ }
+        try { await markVisitInProgress(id, token); } catch { /* A server in-progress marker failure does not discard the loaded visit. */ }
       } finally {
         setLoading(false);
       }
@@ -113,7 +113,7 @@ export function useVisitDetailData(options: Options) {
     const loc = await getLocation();
     if (loc && persistCheckInLocation) {
       checkInLocRef.current = loc;
-      try { await AsyncStorage.setItem(checkInLocKey, JSON.stringify(loc)); } catch {}
+      try { await AsyncStorage.setItem(checkInLocKey, JSON.stringify(loc)); } catch { /* The in-memory coordinates remain available for this check-in submission. */ }
     }
     const payload = {
       notes: noteToOffice || undefined,
@@ -246,7 +246,7 @@ export function useVisitDetailData(options: Options) {
         loc = await getLocation();
         if (loc) {
           checkInLocRef.current = loc;
-          try { await AsyncStorage.setItem(checkInLocKey, JSON.stringify(loc)); } catch {}
+          try { await AsyncStorage.setItem(checkInLocKey, JSON.stringify(loc)); } catch { /* The in-memory coordinates remain available for this autosave submission. */ }
         }
       }
       const payload = { ...payloadBase, checkInLoc: loc };

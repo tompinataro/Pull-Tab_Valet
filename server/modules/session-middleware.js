@@ -3,7 +3,7 @@
 const expressSession = require('express-session');
 const PgSession = require('connect-pg-simple')(expressSession);
 const pool = require('./pool.js');
-const warnings = require('../constants/warnings');
+const warnings = require('../constants/warnings'); // eslint-disable-line @typescript-eslint/no-var-requires -- Retain synchronous CommonJS: Node 20.18.3 rejects require(ESM); 20.19.4 supports newer interop.
 
 /*
   The session makes it so a user can enters their username and password one time,

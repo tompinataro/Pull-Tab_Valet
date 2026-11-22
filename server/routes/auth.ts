@@ -3,10 +3,7 @@ import { dbQuery, hasDb } from '../db';
 import { getAdminEmail, getDemoEmail, getDemoPassword } from '../config';
 import { AuthMiddleware, JwtUser, UserRole, signToken } from '../auth';
 
-const encryptLib = require('../modules/encryption') as {
-  encryptPassword: (password: string) => string;
-  comparePassword: (candidate: string, stored: string) => boolean;
-};
+import encryptLib = require('../modules/encryption');
 
 function ensureDatabase(res: express.Response): boolean {
   if (!hasDb()) {
@@ -154,16 +151,19 @@ export function createAuthRouter(requireAuth: AuthMiddleware) {
         deleted = true;
       }
 
-      try {
-        const msg = `[account/delete] user ${userId} requested deletion${reason ? ` (reason: ${reason})` : ''}${hasDb() ? '' : ' (no database configured; treated as stateless deletion)'}`;
-        console.log(msg);
-      } catch {}
-
-      return res.json({
+      const sendResult = () => res.json({
         ok: true,
         deleted,
         requiresManualCleanup: !hasDb(),
       });
+      try {
+        const msg = `[account/delete] user ${userId} requested deletion${reason ? ` (reason: ${reason})` : ''}${hasDb() ? '' : ' (no database configured; treated as stateless deletion)'}`;
+        console.log(msg);
+      } catch {
+        return sendResult();
+      }
+
+      return sendResult();
     } catch (err) {
       console.error('[account/delete] unexpected error', err);
       return res.status(500).json({ ok: false, error: 'account deletion error' });

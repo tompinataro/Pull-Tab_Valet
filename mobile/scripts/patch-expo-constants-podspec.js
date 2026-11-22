@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
 const podspecPath = path.join(
-  __dirname,
+  scriptDir,
   '..',
   'node_modules',
   'expo-constants',
@@ -13,7 +16,7 @@ const podspecPath = path.join(
 );
 
 const updatesPodspecPath = path.join(
-  __dirname,
+  scriptDir,
   '..',
   'node_modules',
   'expo-updates',
@@ -22,7 +25,7 @@ const updatesPodspecPath = path.join(
 );
 
 const podsProjectPath = path.join(
-  __dirname,
+  scriptDir,
   '..',
   'ios',
   'Pods',

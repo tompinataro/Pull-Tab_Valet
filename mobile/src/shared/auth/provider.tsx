@@ -51,13 +51,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUnauthorizedHandler(async () => {
       try {
         showBanner({ type: 'error', message: 'Session expired - please sign in.' });
-      } catch {}
+      } catch { /* The advisory banner must not block the existing session cleanup below. */ }
       setToken(null);
       setUser(null);
       try {
         await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
         await AsyncStorage.removeItem(AUTH_USER_KEY);
-      } catch {}
+      } catch {
+        showBanner({
+          type: 'error',
+          message: 'Session expired. Please sign in again. This device could not clear the saved sign-in.',
+        });
+      }
     });
     setTokenRefreshedHandler(async (newToken, newUser) => {
       try {
@@ -65,7 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (newUser) setUser(newUser);
         await AsyncStorage.setItem(AUTH_TOKEN_KEY, newToken);
         if (newUser) await AsyncStorage.setItem(AUTH_USER_KEY, JSON.stringify(newUser));
-      } catch {}
+      } catch {
+        showBanner({
+          type: 'info',
+          message: 'This device could not save the updated sign-in.',
+        });
+      }
     });
     return () => setUnauthorizedHandler(null);
   }, []);

@@ -60,9 +60,9 @@ export default function BoxDetailScreen() {
     }
   }
 
+  // Reload the box and its related records when the route id changes.
   useEffect(() => {
     refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const depositTotal = deposits.reduce((sum, d) => sum + d.amount_cents, 0);
