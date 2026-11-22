@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TextInput, StyleSheet, Modal, Pressable } from 'react-native';
+import { ScrollView, View, Text, TextInput, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigationTypes';
 import { useAuth } from '../auth/provider';
@@ -59,17 +59,25 @@ export default function FieldTechniciansScreen({ route, navigation }: Props) {
       });
       if (res?.ok) {
         let temp = res.tempPassword;
+        let assignmentConfirmed = true;
         if (!temp || temp.length < 8) {
           temp = generateTempPassword(8);
           try {
-            await adminSetUserPassword(token, { userId: res.user.id, newPassword: temp });
-          } catch {}
+            const assignment = await adminSetUserPassword(token, { userId: res.user.id, newPassword: temp });
+            assignmentConfirmed = assignment?.ok === true;
+          } catch {
+            assignmentConfirmed = false;
+          }
         }
-        setLastTemp({ name: res.user.name, password: temp });
+        setLastTemp(assignmentConfirmed ? { name: res.user.name, password: temp } : null);
         setName('');
         setEmail('');
         setPhone('');
-        showBanner({ type: 'success', message: `Added ${res.user.name}. Share their temp password.` });
+        if (assignmentConfirmed) {
+          showBanner({ type: 'success', message: `Added ${res.user.name}. Share their temp password.` });
+        } else {
+          showBanner({ type: 'info', message: 'Field technician added. Temporary password setup wasn’t confirmed. Check the account before sharing a password.' });
+        }
         await load();
       }
     } catch (err: any) {

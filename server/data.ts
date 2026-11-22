@@ -1,4 +1,5 @@
 import { dbQuery, hasDb } from './db';
+import { logRouteDiagnostic } from './diagnostics';
 
 export type TodayRoute = { id: number; clientName: string; address: string; scheduledTime: string };
 export type ChecklistItem = { key: string; label: string; done: boolean };
@@ -162,12 +163,12 @@ export async function getTodayRoutes(userId: number): Promise<TodayRoute[]> {
         });
       }
       const deduped = dedupeByKey(dedupeById(mapped));
-      try { console.log(`[getTodayRoutes] routes_today for user ${userId}: ${deduped.length}`); } catch {}
+      logRouteDiagnostic(`[getTodayRoutes] routes_today for user ${userId}: ${deduped.length}`);
       return ensureMinimumRoutes(deduped);
     }
     // No routes_today entries; do not fall back to service_routes ownership.
     // Return empty to reflect "unassigned" state accurately.
-    try { console.log(`[getTodayRoutes] no routes_today entries for user ${userId} -> empty`); } catch {}
+    logRouteDiagnostic(`[getTodayRoutes] no routes_today entries for user ${userId} -> empty`);
     return [];
   }
   return FALLBACK_ROUTES;

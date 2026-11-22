@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
 const bgFetchCandidatePaths = [
   path.join(
-    __dirname,
+    scriptDir,
     '..',
     'node_modules',
     'expo-background-fetch',
@@ -19,7 +22,7 @@ const bgFetchCandidatePaths = [
     'BackgroundFetchTaskConsumer.java'
   ),
   path.join(
-    __dirname,
+    scriptDir,
     '..',
     'node_modules',
     'expo',
@@ -88,7 +91,7 @@ for (const filePath of bgFetchCandidatePaths) {
 
 const permissionsPaths = [
   path.join(
-    __dirname,
+    scriptDir,
     '..',
     'node_modules',
     'expo-modules-core',
@@ -104,7 +107,7 @@ const permissionsPaths = [
     'PermissionsService.kt'
   ),
   path.join(
-    __dirname,
+    scriptDir,
     '..',
     'node_modules',
     'expo',

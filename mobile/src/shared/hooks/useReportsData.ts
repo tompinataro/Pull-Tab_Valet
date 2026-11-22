@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { adminFetchReportSummary, ReportSummaryRow } from '../api/client';
 import { showBanner } from '../components/globalBannerBus';
 import { flushQueue, getQueueStats } from '../utils/offlineQueue';
@@ -47,7 +47,9 @@ export function useReportsData(options: Options) {
             showBanner({ type: 'info', message: `Retrying ${remaining} queued visit${remaining > 1 ? 's' : ''} in background.` });
           }
         }
-      } catch {}
+      } catch {
+        // Queue sync and its advisory banner are best effort; still fetch the report.
+      }
       const customStartIso = parseShortDate(customStartDate);
       const customEndIso = parseShortDate(customEndDate);
       if (isCustom && (!customStartIso || !customEndIso)) {

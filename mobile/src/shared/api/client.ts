@@ -44,7 +44,7 @@ async function fetchJson<T = any>(
               const newToken: string | undefined = rr?.token;
               const user = rr?.user;
               if (newToken) {
-                try { await tokenRefreshedHandler?.(newToken, user); } catch {}
+                try { await tokenRefreshedHandler?.(newToken, user); } catch { /* A failed callback does not discard an accepted refresh before retry. */ }
                 const headers = new Headers(rest.headers as any);
                 headers.set('Authorization', `Bearer ${newToken}`);
                 // Retry original request once with new token
@@ -53,8 +53,8 @@ async function fetchJson<T = any>(
               }
             }
           }
-        } catch {}
-        try { unauthorizedHandler?.(); } catch {}
+        } catch { /* Refresh or retry failure falls through to the original response error path. */ }
+        try { unauthorizedHandler?.(); } catch { /* A synchronous callback throw does not replace the original response error. */ }
       }
       throw new Error(`${res.status} ${res.statusText}${text ? `: ${text}` : ''}`);
     }

@@ -2,6 +2,7 @@ import express from 'express';
 import { getTodayRoutes, getVisit, saveVisit } from '../data';
 import { dbQuery, hasDb } from '../db';
 import { IS_TEST } from '../config';
+import { logRouteDiagnostic } from '../diagnostics';
 
 type AuthMiddleware = (req: express.Request, res: express.Response, next: express.NextFunction) => void;
 
@@ -95,6 +96,20 @@ function getFlags(visitId: number, userId: number | undefined, store: VisitState
   return { completedToday: !!cur?.completed, inProgress: !!cur?.inProgress };
 }
 
+// The visit has already been saved. A supplemental odometer failure must not turn it into an error.
+async function insertOptionalStartOdometer(userId: number, date: string, reading: number) {
+  try {
+    await dbQuery(
+      `insert into daily_start_odometer (user_id, date, odometer_reading)
+       values ($1, $2, $3)
+       on conflict (user_id, date) do nothing`,
+      [userId, date, reading]
+    );
+  } catch {
+    return;
+  }
+}
+
 export function createVisitsRouter(requireAuth: AuthMiddleware, requireAdmin: AuthMiddleware) {
   const router = express.Router();
 
@@ -102,9 +117,7 @@ export function createVisitsRouter(requireAuth: AuthMiddleware, requireAdmin: Au
     try {
       const userId = req.user?.id;
       const routes = await getTodayRoutes(userId || 0);
-      try {
-        console.log(`[routes/today] userId=${userId} count=${routes.length}`);
-      } catch {}
+      logRouteDiagnostic(`[routes/today] userId=${userId} count=${routes.length}`);
       let withFlags = routes.map(r => ({ ...r, completedToday: false, inProgress: false }));
       const day = dayKey();
       const store = resolveVisitStateStore(res);
@@ -179,14 +192,7 @@ export function createVisitsRouter(requireAuth: AuthMiddleware, requireAdmin: Au
           }
         }
         if (rawStr && Number.isFinite(numericOdo)) {
-          try {
-            await dbQuery(
-              `insert into daily_start_odometer (user_id, date, odometer_reading)
-               values ($1, $2, $3)
-               on conflict (user_id, date) do nothing`,
-              [userId, dateStr, numericOdo]
-            );
-          } catch {}
+          await insertOptionalStartOdometer(userId, dateStr, numericOdo);
         }
       }
       markCompleted(id, userId, store);

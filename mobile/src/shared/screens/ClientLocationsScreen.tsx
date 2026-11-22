@@ -16,6 +16,7 @@ import HeaderEmailChip from '../components/HeaderEmailChip';
 import ListRow from '../components/ListRow';
 import { colors, spacing } from '../theme';
 import { buildFullAddress } from '../utils/address';
+import { tryApplyAddressLocation } from '../utils/optionalAddressLocation';
 import { truncateText } from '../utils/text';
 import { useClientLocationsData, UniqueClient } from '../hooks/useClientLocationsData';
 
@@ -231,17 +232,11 @@ export default function ClientLocationsScreen({ route, navigation }: Props) {
       return;
     }
     const fullAddress = buildFullAddress(address, city, region, zip);
-    if (fullAddress) {
-      try {
-        const results = await Location.geocodeAsync(fullAddress);
-        if (results?.length) {
-          setLatitude(results[0].latitude.toFixed(6));
-          setLongitude(results[0].longitude.toFixed(6));
-          showBanner({ type: 'success', message: 'Lat/long set from the address.' });
-          return;
-        }
-      } catch {}
-    }
+    if (fullAddress && await tryApplyAddressLocation(fullAddress, address => Location.geocodeAsync(address), coordinates => {
+      setLatitude(coordinates.latitude.toFixed(6));
+      setLongitude(coordinates.longitude.toFixed(6));
+      showBanner({ type: 'success', message: 'Lat/long set from the address.' });
+    })) return;
     try {
       const status = await Location.getForegroundPermissionsAsync();
       if (status.status !== 'granted') {

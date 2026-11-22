@@ -8,5 +8,9 @@ export function setBannerHandler(fn: ((msg: BannerMsg) => void) | null) {
 }
 
 export function showBanner(msg: BannerMsg) {
-  try { handler?.(msg); } catch {}
+  try {
+    handler?.(msg);
+  } catch {
+    return; // A UI notification failure must not escape into the caller.
+  }
 }

@@ -8,7 +8,9 @@ export async function shareEmail(subject: string, body: string): Promise<boolean
       await Linking.openURL(mailto);
       return true;
     }
-  } catch {}
+  } catch {
+    // If the mail app cannot be queried or opened, continue to the share sheet.
+  }
 
   try {
     await Share.share({
@@ -16,7 +18,7 @@ export async function shareEmail(subject: string, body: string): Promise<boolean
       message: body,
     });
     return true;
-  } catch {}
-
-  return false;
+  } catch {
+    return false;
+  }
 }

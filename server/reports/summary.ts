@@ -64,6 +64,16 @@ function formatDuration(minutes: number) {
   return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 }
 
+function optionalTimestamp(value: unknown): string | null {
+  if (!value) return null;
+  try {
+    const date = new Date(value as string | number | Date);
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  } catch {
+    return null;
+  }
+}
+
 function formatCompactDate(value?: string | null) {
   if (!value) return '';
   let raw = value;
@@ -158,34 +168,8 @@ export async function buildSummary(startDate: Date, endDate: Date): Promise<Repo
     if (row.tech_name && /^demo\b/i.test(techName)) continue;
 
     const payload = row.payload || {};
-    let checkInTs: string | null = null;
-    let checkOutTs: string | null = null;
-    try {
-      if (typeof payload.checkInTs === 'string') {
-        const d = new Date(payload.checkInTs);
-        if (!Number.isNaN(d.getTime())) checkInTs = d.toISOString();
-      } else if (payload.checkInTs) {
-        const d = new Date(payload.checkInTs as any);
-        if (!Number.isNaN(d.getTime())) checkInTs = d.toISOString();
-      }
-    } catch {}
-    try {
-      if (row.visit_time) {
-        const d = new Date(row.visit_time as any);
-        if (!Number.isNaN(d.getTime())) checkOutTs = d.toISOString();
-      }
-    } catch {}
-    if (!checkOutTs) {
-      try {
-        if (typeof payload.checkOutTs === 'string') {
-          const d = new Date(payload.checkOutTs);
-          if (!Number.isNaN(d.getTime())) checkOutTs = d.toISOString();
-        } else if (payload.checkOutTs) {
-          const d = new Date(payload.checkOutTs as any);
-          if (!Number.isNaN(d.getTime())) checkOutTs = d.toISOString();
-        }
-      } catch {}
-    }
+    let checkInTs = optionalTimestamp(payload.checkInTs);
+    const checkOutTs = optionalTimestamp(row.visit_time) ?? optionalTimestamp(payload.checkOutTs);
     if (!checkInTs && row.created_at) {
       const d = new Date(row.created_at as any);
       if (!Number.isNaN(d.getTime())) checkInTs = d.toISOString();
@@ -202,7 +186,7 @@ export async function buildSummary(startDate: Date, endDate: Date): Promise<Repo
     const techNotes = payload.techNotes || payload.noteToOffice || payload.notes || null;
     const odometerReading = payload.odometerReading != null ? Number(payload.odometerReading) : null;
 
-    let mileageDelta = 0;
+    const mileageDelta = 0;
     const rawLoc = payload.checkOutLoc;
     let geoValidated: boolean | undefined = undefined;
     let distanceFromClientFeet: number | null = null;
